@@ -71,26 +71,14 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
 	} else {
-		var d device.Device
-
-		if err := d.UnmarshalBinary(encoded); err != nil {
-			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
-		} else {
-			fmt.Println("decoded value", d.Value())
-		}
+		decodeBinary(encoded)
 	}
 
 	encoded, err = papi1.GetDevice(dev2, true)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
 	} else {
-		var d device.Device
-
-		if err := json.Unmarshal(encoded, &d); err != nil {
-			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
-		} else {
-			fmt.Println("decoded value", d.Value())
-		}
+		decodeJSON(encoded)
 	}
 
 	value, err = papi1.Device_Value(uintptr(32))
@@ -108,25 +96,33 @@ func main() {
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
 	} else {
-		var d device.Device
-
-		if err := d.UnmarshalBinary(encoded); err != nil {
-			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
-		} else {
-			fmt.Println("decoded value", d.Value())
-		}
+		decodeBinary(encoded)
 	}
 
 	encoded, err = papi2.GetDevice(dev4, true)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
 	} else {
-		var d device.Device
+		decodeJSON(encoded)
+	}
+}
 
-		if err := json.Unmarshal(encoded, &d); err != nil {
-			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
-		} else {
-			fmt.Println("decoded value", d.Value())
-		}
+func decodeBinary(encoded []byte) {
+	var d device.Device
+
+	if err := d.UnmarshalBinary(encoded); err != nil {
+		fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
+	} else {
+		fmt.Println("decoded value", d.Value())
+	}
+}
+
+func decodeJSON(encoded []byte) {
+	var d device.Device
+
+	if err := json.Unmarshal(encoded, &d); err != nil {
+		fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
+	} else {
+		fmt.Println("decoded value", d.Value())
 	}
 }

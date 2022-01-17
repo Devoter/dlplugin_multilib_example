@@ -1,13 +1,13 @@
 #include <memory>
 #include <map>
-#include <mutex>
+#include <shared_mutex>
 #include <vector>
 
 #include "libcppplug.h"
 #include "device.hpp"
 
 std::map<std::uintptr_t, std::unique_ptr<Device>> devices;
-std::mutex devmx;
+std::shared_mutex devmx;
 
 uintptr_t create_device()
 {
@@ -40,11 +40,11 @@ int free_device(uintptr_t ptr)
 
 int get_device(uintptr_t ptr, uintptr_t cbId, uint8_t use_json, get_device_callback_t callback)
 {
-  devmx.lock();
+  devmx.lock_shared();
 
   if (devices.count(ptr) <= 0)
   {
-    devmx.unlock();
+    devmx.unlock_shared();
 
     return -1;
   }
@@ -53,14 +53,14 @@ int get_device(uintptr_t ptr, uintptr_t cbId, uint8_t use_json, get_device_callb
   {
     auto encoded = devices[ptr]->encode_json();
 
-    devmx.unlock();
+    devmx.unlock_shared();
     callback(cbId, static_cast<char *>(&encoded[0]), encoded.size());
   }
   else
   {
     auto encoded = devices[ptr]->encode_binary();
 
-    devmx.unlock();
+    devmx.unlock_shared();
     callback(cbId, static_cast<char *>(&encoded[0]), encoded.size());
   }
 
@@ -69,34 +69,34 @@ int get_device(uintptr_t ptr, uintptr_t cbId, uint8_t use_json, get_device_callb
 
 int device__print(uintptr_t self)
 {
-  devmx.lock();
+  devmx.lock_shared();
 
   if (devices.count(self) <= 0)
   {
-    devmx.unlock();
+    devmx.unlock_shared();
 
     return -1;
   }
 
   devices[self]->print();
-  devmx.unlock();
+  devmx.unlock_shared();
 
   return 0;
 }
 
 int device__value(uintptr_t self, int32_t *value)
 {
-  devmx.lock();
+  devmx.lock_shared();
 
   if (devices.count(self) <= 0)
   {
-    devmx.unlock();
+    devmx.unlock_shared();
 
     return -1;
   }
 
   *value = devices[self]->value();
-  devmx.unlock();
+  devmx.unlock_shared();
 
   return 0;
 }

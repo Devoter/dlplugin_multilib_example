@@ -19,6 +19,14 @@ make
 ```
 
 
+## Benchmarking
+
+At first, [build](#building) plugins.
+
+```sh
+go test -benchmem -bench=.
+```
+
 ## License
 
 [LICENSE](./LICENSE)
