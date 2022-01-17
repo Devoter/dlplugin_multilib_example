@@ -22,11 +22,11 @@ static void handle_callback(uintptr_t cbId, char* data, size_t size)
 	GetDeviceCallback(cbId, data, size);
 }
 
-static int get_device(uintptr_t r, uintptr_t ptr, uintptr_t callback)
+static int get_device(uintptr_t r, uintptr_t ptr, uint8_t use_json, uintptr_t callback)
 {
 	typedef void (*get_device_callback_t)(uintptr_t h, char *, size_t);
 
-	return ((int (*)(uintptr_t, uintptr_t, get_device_callback_t))r)(ptr, callback, handle_callback);
+	return ((int (*)(uintptr_t, uintptr_t, uint8_t, get_device_callback_t))r)(ptr, callback, use_json, handle_callback);
 }
 
 static int device__print(uintptr_t r, uintptr_t self)
@@ -57,7 +57,7 @@ type getDeviceCallbackFn func(data *C.char, size C.size_t)
 type DevicePlugin struct {
 	createDevice    func() uintptr
 	freeDevice      func(ptr uintptr) error
-	getDevice       func(ptr uintptr) (encoded []byte, err error)
+	getDevice       func(ptr uintptr, useJson bool) (encoded []byte, err error)
 	device_Print    func(self uintptr) error
 	device_Value    func(self uintptr) (value int32, err error)
 	device_SetValue func(self uintptr, value int32) error
@@ -71,8 +71,8 @@ func (dev *DevicePlugin) FreeDevice(ptr uintptr) error {
 	return dev.freeDevice(ptr)
 }
 
-func (dev *DevicePlugin) GetDevice(ptr uintptr) (encoded []byte, err error) {
-	return dev.getDevice(ptr)
+func (dev *DevicePlugin) GetDevice(ptr uintptr, useJson bool) (encoded []byte, err error) {
+	return dev.getDevice(ptr, useJson)
 }
 
 func (dev *DevicePlugin) Device_Print(self uintptr) error {
@@ -126,7 +126,7 @@ func (dev *DevicePlugin) Init(lookup func(symName string) (uintptr, error)) erro
 		return cerror.WrapCError(int(C.free_device(C.uintptr_t(freeDevicePtr), C.uintptr_t(ptr))))
 	}
 
-	dev.getDevice = func(ptr uintptr) ([]byte, error) {
+	dev.getDevice = func(ptr uintptr, useJson bool) ([]byte, error) {
 		var encoded []byte
 
 		var cb getDeviceCallbackFn = func(data *C.char, size C.size_t) {
@@ -138,7 +138,13 @@ func (dev *DevicePlugin) Init(lookup func(symName string) (uintptr, error)) erro
 		cbHandle := cgo.NewHandle(cb)
 		defer cbHandle.Delete()
 
-		cErr := C.get_device(C.uintptr_t(getDevicePtr), C.uintptr_t(ptr), C.uintptr_t(cbHandle))
+		var jsonMode C.uint8_t = 0
+
+		if useJson {
+			jsonMode = 1
+		}
+
+		cErr := C.get_device(C.uintptr_t(getDevicePtr), C.uintptr_t(ptr), jsonMode, C.uintptr_t(cbHandle))
 
 		if cErr < 0 { // size is an error code
 			return nil, cerror.CError(cErr)

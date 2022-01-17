@@ -45,13 +45,20 @@ func free_device(ptr C.uintptr_t) C.int {
 }
 
 //export get_device
-func get_device(ptr C.uintptr_t, cbID C.uintptr_t, callback C.get_device_callback_t) C.int {
+func get_device(ptr C.uintptr_t, cbID C.uintptr_t, useJSON C.uint8_t, callback C.get_device_callback_t) C.int {
 	h, dev, err := getDeviceHandle(ptr)
 	if err != nil {
 		return -1
 	}
 
-	encoded, err := dev.MarshalBinary()
+	var encoded []byte
+
+	if useJSON != 0 {
+		encoded, err = dev.MarshalJSON()
+	} else {
+		encoded, err = dev.MarshalBinary()
+	}
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not encode a device, error=[%v]\n", err)
 		return -2

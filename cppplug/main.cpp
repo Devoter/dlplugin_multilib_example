@@ -38,7 +38,7 @@ int free_device(uintptr_t ptr)
   return 0;
 }
 
-int get_device(uintptr_t ptr, uintptr_t cbId, get_device_callback_t callback)
+int get_device(uintptr_t ptr, uintptr_t cbId, uint8_t use_json, get_device_callback_t callback)
 {
   devmx.lock();
 
@@ -49,11 +49,20 @@ int get_device(uintptr_t ptr, uintptr_t cbId, get_device_callback_t callback)
     return -1;
   }
 
-  auto encoded = devices[ptr]->encode();
+  if (use_json)
+  {
+    auto encoded = devices[ptr]->encode_json();
 
-  devmx.unlock();
+    devmx.unlock();
+    callback(cbId, static_cast<char *>(&encoded[0]), encoded.size());
+  }
+  else
+  {
+    auto encoded = devices[ptr]->encode_binary();
 
-  callback(cbId, static_cast<char *>(&encoded[0]), encoded.size());
+    devmx.unlock();
+    callback(cbId, static_cast<char *>(&encoded[0]), encoded.size());
+  }
 
   return 0;
 }

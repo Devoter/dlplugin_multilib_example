@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -66,8 +67,7 @@ func main() {
 
 	fmt.Printf("Loaded value: %d, error [%v]\n", value, err)
 
-	encoded, err := papi1.GetDevice(dev1)
-
+	encoded, err := papi1.GetDevice(dev1, false)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
 	} else {
@@ -76,7 +76,20 @@ func main() {
 		if err := d.UnmarshalBinary(encoded); err != nil {
 			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
 		} else {
-			fmt.Println("value", d.Value())
+			fmt.Println("decoded value", d.Value())
+		}
+	}
+
+	encoded, err = papi1.GetDevice(dev2, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
+	} else {
+		var d device.Device
+
+		if err := json.Unmarshal(encoded, &d); err != nil {
+			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
+		} else {
+			fmt.Println("decoded value", d.Value())
 		}
 	}
 
@@ -91,8 +104,7 @@ func main() {
 
 	papi2.Device_SetValue(dev4, 42)
 
-	encoded, err = papi2.GetDevice(dev4)
-
+	encoded, err = papi2.GetDevice(dev3, false)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
 	} else {
@@ -101,7 +113,20 @@ func main() {
 		if err := d.UnmarshalBinary(encoded); err != nil {
 			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
 		} else {
-			fmt.Println("value", d.Value())
+			fmt.Println("decoded value", d.Value())
+		}
+	}
+
+	encoded, err = papi2.GetDevice(dev4, true)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
+	} else {
+		var d device.Device
+
+		if err := json.Unmarshal(encoded, &d); err != nil {
+			fmt.Fprintf(os.Stderr, "could not decode a device.Device, error=[%v]\n", err)
+		} else {
+			fmt.Println("decoded value", d.Value())
 		}
 	}
 }

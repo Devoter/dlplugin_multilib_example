@@ -2,6 +2,7 @@
 #define DEVICE_HPP
 
 #include <vector>
+#include <string>
 #include <cstdint>
 
 class Device
@@ -10,10 +11,11 @@ class Device
 
 public:
   Device();
-  int32_t value();
+  int32_t value() const;
   void set_value(int32_t v);
-  void print();
-  std::vector<char> encode();
+  void print() const;
+  std::vector<char> encode_binary() const;
+  std::string encode_json() const;
 };
 
 #endif

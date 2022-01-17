@@ -2,6 +2,7 @@ package device
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"unsafe"
@@ -41,6 +42,26 @@ func (d *Device) UnmarshalBinary(data []byte) error {
 	}
 
 	d.val = int32(binary.LittleEndian.Uint32(data))
+
+	return nil
+}
+
+func (d *Device) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf(`{"val":%d}`, d.val)), nil
+}
+
+func (d *Device) UnmarshalJSON(data []byte) error {
+	type tmpt struct {
+		Val int32 `json:"val"`
+	}
+
+	var tmp tmpt
+
+	if err := json.Unmarshal(data, &tmp); err != nil {
+		return err
+	}
+
+	d.val = tmp.Val
 
 	return nil
 }
