@@ -19,7 +19,7 @@ func main() {
 
 	flag.Parse()
 
-	if *libraryFilename == "" {
+	if *libraryFilename == "" || *library2Filename == "" {
 		fmt.Fprintf(os.Stderr, "empty plugin filename\n")
 		os.Exit(2)
 	}
