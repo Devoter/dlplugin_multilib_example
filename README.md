@@ -3,7 +3,7 @@
 This example demonstrates a loading multiple dynamic libraries (C++ and Go) with the same interface into the single project.
 
 
-Additionally, here is a [hashicorp/go-plugin](https://github.com/hashicorp/go-plugin)-based example. See [this page](./rpcplug/README.md) if you want to build and test it.
+Additionally, here is a [hashicorp/go-plugin](https://github.com/hashicorp/go-plugin)-based example. See [this page](./rpcplug/) if you want to build and test it.
 
 
 ## Building
