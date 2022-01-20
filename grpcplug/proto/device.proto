@@ -1,0 +1,59 @@
+syntax = "proto3";
+package proto;
+
+option go_package = "./proto";
+
+message CreateDeviceRequest {
+}
+
+message CreateDeviceResponse {
+    uint64 ptr = 1;
+}
+
+message FreeDeviceRequest {
+    uint64 ptr = 1;
+}
+
+message FreeDeviceResponse {
+}
+
+message GetDeviceRequest {
+    uint64 ptr = 1;
+    bool useJson = 2;
+}
+
+message GetDeviceResponse {
+    bytes encoded = 1;
+}
+
+message DevicePrintRequest {
+    uint64 ptr = 1;
+}
+
+message DevicePrintResponse {
+}
+
+message DeviceValueRequest {
+    uint64 ptr = 1;
+}
+
+message DeviceValueResponse {
+    int32 value = 1;
+}
+
+message DeviceSetValueRequest {
+    uint64 ptr = 1;
+    int32 value = 2;
+}
+
+message DeviceSetValueResponse {
+}
+
+service Device {
+    rpc CreateDevice(CreateDeviceRequest) returns (CreateDeviceResponse);
+    rpc FreeDevice(FreeDeviceRequest) returns (FreeDeviceResponse);
+    rpc GetDevice(GetDeviceRequest) returns (GetDeviceResponse);
+    rpc DevicePrint(DevicePrintRequest) returns (DevicePrintResponse);
+    rpc DeviceValue(DeviceValueRequest) returns (DeviceValueResponse);
+    rpc DeviceSetValue(DeviceSetValueRequest) returns (DeviceSetValueResponse);
+}

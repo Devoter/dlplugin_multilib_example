@@ -37,8 +37,6 @@ func accessDevice(b *testing.B, lib string) *benchDataItem {
 			Plugins:         shared.PluginMap,
 			Cmd:             exec.Command("sh", "-c", lib),
 			Logger:          hclog.NewNullLogger(),
-			AllowedProtocols: []plugin.Protocol{
-				plugin.ProtocolNetRPC, plugin.ProtocolGRPC},
 		})
 		// defer client.Kill()
 
@@ -73,7 +71,7 @@ func accessDevice(b *testing.B, lib string) *benchDataItem {
 }
 
 func BenchmarkSetGetGoPlug(b *testing.B) {
-	benchItem := accessDevice(b, "./device-go-grpc")
+	benchItem := accessDevice(b, "./device-go-rpc")
 	if benchItem == nil {
 		b.Fatalf("could not access a device\n")
 	}
@@ -101,7 +99,7 @@ func BenchmarkSetGetGoPlug(b *testing.B) {
 }
 
 func BenchmarkReadingGoPlug(b *testing.B) {
-	benchItem := accessDevice(b, "./device-go-grpc")
+	benchItem := accessDevice(b, "./device-go-rpc")
 	if benchItem == nil {
 		b.Fatalf("iteration: %d. could not access a device\n", b.N)
 	}
@@ -132,7 +130,7 @@ func BenchmarkReadingGoPlug(b *testing.B) {
 }
 
 func BenchmarkReadingJSONGoPlug(b *testing.B) {
-	benchItem := accessDevice(b, "./device-go-grpc")
+	benchItem := accessDevice(b, "./device-go-rpc")
 	if benchItem == nil {
 		b.Fatalf("iteration: %d. could not access a device\n", b.N)
 	}

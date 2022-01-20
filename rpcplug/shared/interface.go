@@ -1,13 +1,9 @@
-// Package shared contains shared data between the host and plugins.
 package shared
 
 import (
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
+	"net/rpc"
 
 	"github.com/hashicorp/go-plugin"
-
-	"github.com/Devoter/dlplugin_multilib_example/rpcplug/proto"
 )
 
 // Handshake is a common handshake that is shared by plugin and host.
@@ -22,7 +18,7 @@ var PluginMap = map[string]plugin.Plugin{
 	"device": &DevicePlugin{},
 }
 
-// KV is the interface that we're exposing as a plugin.
+// Device is the interface that we're exposing as a plugin.
 type Device interface {
 	CreateDevice() (uint64, error)
 	FreeDevice(ptr uint64) error
@@ -33,8 +29,7 @@ type Device interface {
 }
 
 // This is the implementation of plugin.Plugin so we can serve/consume this.
-// We also implement GRPCPlugin so that this plugin can be served over
-// gRPC.
+// We also implement RPCPlugin so that this plugin can be served.
 type DevicePlugin struct {
 	plugin.NetRPCUnsupportedPlugin
 	// Concrete implementation, written in Go. This is only used for plugins
@@ -42,19 +37,10 @@ type DevicePlugin struct {
 	Impl Device
 }
 
-func (p *DevicePlugin) GRPCServer(broker *plugin.GRPCBroker, s *grpc.Server) error {
-	proto.RegisterDeviceServer(s, &GRPCServer{
-		Impl:   p.Impl,
-		broker: broker,
-	})
-	return nil
+func (p *DevicePlugin) Server(*plugin.MuxBroker) (interface{}, error) {
+	return &RPCServer{Impl: p.Impl}, nil
 }
 
-func (p *DevicePlugin) GRPCClient(ctx context.Context, broker *plugin.GRPCBroker, c *grpc.ClientConn) (interface{}, error) {
-	return &GRPCClient{
-		client: proto.NewDeviceClient(c),
-		broker: broker,
-	}, nil
+func (p *DevicePlugin) Client(_ *plugin.MuxBroker, c *rpc.Client) (interface{}, error) {
+	return &RPCClient{client: c}, nil
 }
-
-var _ plugin.GRPCPlugin = &DevicePlugin{}

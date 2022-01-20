@@ -6,10 +6,9 @@ import (
 	"runtime/cgo"
 	"sync"
 
-	"github.com/hashicorp/go-plugin"
-
 	"github.com/Devoter/dlplugin_multilib_example/device"
 	"github.com/Devoter/dlplugin_multilib_example/rpcplug/shared"
+	"github.com/hashicorp/go-plugin"
 )
 
 type Device struct {
@@ -147,6 +146,5 @@ func main() {
 		Plugins: map[string]plugin.Plugin{
 			"device": &shared.DevicePlugin{Impl: &Device{}},
 		},
-		GRPCServer: plugin.DefaultGRPCServer,
 	})
 }

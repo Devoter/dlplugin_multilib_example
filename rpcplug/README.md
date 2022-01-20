@@ -1,6 +1,6 @@
 # rpcplug
 
-This example uses [hashicorp/go-plugin](https://github.com/hashicorp/go-plugin) based on [gRPC](https://grpc.io/).
+This example uses [hashicorp/go-plugin](https://github.com/hashicorp/go-plugin) based on [net/rpc](https://pkg.go.dev/net/rpc).
 
 ## Building
 
@@ -11,7 +11,7 @@ make
 ## Running
 
 ```sh
-./rpclib -plug device-go-grpc
+./rpclib -plug="./device-go-rpc"
 ```
 
 

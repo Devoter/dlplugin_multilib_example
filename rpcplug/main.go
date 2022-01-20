@@ -25,14 +25,19 @@ func main() {
 		os.Exit(2)
 	}
 
+	// logger := hclog.New(&hclog.LoggerOptions{
+	// 	Name:   "plugin",
+	// 	Output: os.Stdout,
+	// 	Level:  hclog.Debug,
+	// })
+
 	// We're a host. Start by launching the plugin process.
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: shared.Handshake,
 		Plugins:         shared.PluginMap,
-		Cmd:             exec.Command("sh", "-c", os.Getenv("DEVICE_PLUGIN")),
+		Cmd:             exec.Command("sh", "-c", *libraryFilename),
 		Logger:          hclog.NewNullLogger(),
-		AllowedProtocols: []plugin.Protocol{
-			plugin.ProtocolNetRPC, plugin.ProtocolGRPC},
+		// Logger: logger,
 	})
 	defer client.Kill()
 
@@ -57,38 +62,57 @@ func main() {
 	dev2, _ := papi.CreateDevice()
 	defer papi.FreeDevice(dev2)
 
-	papi.DeviceSetValue(dev2, 32)
-	papi.DevicePrint(dev2)
+	fmt.Printf("Setting a value of dev2 to %d\n", 32)
+	if err := papi.DeviceSetValue(dev2, 32); err != nil {
+		fmt.Fprintf(os.Stderr, "could not set a value of dev2 by the reason: %v\n", err)
+	}
 
+	fmt.Printf("Printing a value of dev2\n")
+	if err := papi.DevicePrint(dev2); err != nil {
+		fmt.Fprintf(os.Stderr, "could not print a value of dev2 by the reason: %v\n", err)
+	}
+
+	fmt.Printf("Loading a value of dev2\n")
 	value, err := papi.DeviceValue(dev2)
-
 	fmt.Printf("Loaded value: %d, error [%v]\n", value, err)
 
-	papi.DeviceSetValue(dev1, 24)
-	papi.DevicePrint(dev1)
+	fmt.Printf("Setting a value of dev1 to %d\n", 24)
+	if err := papi.DeviceSetValue(dev1, 24); err != nil {
+		fmt.Fprintf(os.Stderr, "could not set a value of dev1 by the reason: %v\n", err)
+	}
 
-	papi.DeviceSetValue(dev1, int32(*setValue))
+	fmt.Printf("Printing a value of dev1\n")
+	if err := papi.DevicePrint(dev1); err != nil {
+		fmt.Fprintf(os.Stderr, "could not print a value of dev1 by the reason: %v\n", err)
+	}
 
+	fmt.Printf("Setting a value of dev1 to %d\n", int32(*setValue))
+	if err := papi.DeviceSetValue(dev1, int32(*setValue)); err != nil {
+		fmt.Fprintf(os.Stderr, "could not set a value of dev1 by the reason: %v\n", err)
+	}
+
+	fmt.Printf("Loading a value of dev1\n")
 	value, err = papi.DeviceValue(dev1)
-
 	fmt.Printf("Loaded value: %d, error [%v]\n", value, err)
 
+	fmt.Printf("Getting a binary state of dev1\n")
 	encoded, err := papi.GetDevice(dev1, false)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
+		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device by the reason: %v\n", err)
 	} else {
 		decodeBinary(encoded)
 	}
 
+	fmt.Printf("Getting a JSON state of dev2\n")
 	encoded, err = papi.GetDevice(dev2, true)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device, error=[%v]\n", err)
+		fmt.Fprintf(os.Stderr, "could not load an encoded device.Device by the reason: %v\n", err)
 	} else {
 		decodeJSON(encoded)
 	}
 
+	fmt.Printf("Loading a value of undefined device\n")
 	value, err = papi.DeviceValue(uint64(32))
-
 	fmt.Printf("Loaded value: %d, error [%v]\n", value, err)
 }
 
