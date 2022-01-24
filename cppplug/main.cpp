@@ -38,7 +38,7 @@ int free_device(uintptr_t ptr)
   return 0;
 }
 
-int get_device(uintptr_t ptr, uintptr_t cbId, uint8_t use_json, get_device_callback_t callback)
+int get_device(uintptr_t ptr, uintptr_t cb_id, char use_json, get_device_callback_t callback)
 {
   devmx.lock_shared();
 
@@ -54,14 +54,14 @@ int get_device(uintptr_t ptr, uintptr_t cbId, uint8_t use_json, get_device_callb
     auto encoded = devices[ptr]->encode_json();
 
     devmx.unlock_shared();
-    callback(cbId, static_cast<char *>(&encoded[0]), encoded.size());
+    callback(cb_id, static_cast<char *>(&encoded[0]), encoded.size());
   }
   else
   {
     auto encoded = devices[ptr]->encode_binary();
 
     devmx.unlock_shared();
-    callback(cbId, static_cast<char *>(&encoded[0]), encoded.size());
+    callback(cb_id, static_cast<char *>(&encoded[0]), encoded.size());
   }
 
   return 0;

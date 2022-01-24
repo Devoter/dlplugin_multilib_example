@@ -50,7 +50,7 @@ func free_device(ptr C.uintptr_t) C.int {
 }
 
 //export get_device
-func get_device(ptr C.uintptr_t, cbID C.uintptr_t, useJSON C.uint8_t, callback C.get_device_callback_t) C.int {
+func get_device(ptr C.uintptr_t, cbID C.uintptr_t, useJSON C.char, callback C.get_device_callback_t) C.int {
 	mx.RLock()
 	dev, err := getDevice(ptr)
 	if err != nil {

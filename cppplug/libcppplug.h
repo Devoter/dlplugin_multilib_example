@@ -13,7 +13,7 @@ extern "C"
 
   extern uintptr_t create_device();
   extern int free_device(uintptr_t ptr);
-  extern int get_device(uintptr_t ptr, uintptr_t cbId, uint8_t use_json, get_device_callback_t callback);
+  extern int get_device(uintptr_t ptr, uintptr_t cb_id, char use_json, get_device_callback_t callback);
   extern int device__print(uintptr_t self);
   extern int device__value(uintptr_t self, int32_t *value);
   extern int device__set_value(uintptr_t self, int32_t value);

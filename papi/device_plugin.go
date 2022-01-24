@@ -17,16 +17,11 @@ static int free_device(uintptr_t r, uintptr_t ptr)
 	return ((int (*)(uintptr_t))r)(ptr);
 }
 
-static void handle_callback(uintptr_t cbId, char* data, size_t size)
-{
-	GetDeviceCallback(cbId, data, size);
-}
-
-static int get_device(uintptr_t r, uintptr_t ptr, uint8_t use_json, uintptr_t callback)
+static int get_device(uintptr_t r, uintptr_t ptr, char use_json, uintptr_t callback)
 {
 	typedef void (*get_device_callback_t)(uintptr_t h, char *, size_t);
 
-	return ((int (*)(uintptr_t, uintptr_t, uint8_t, get_device_callback_t))r)(ptr, callback, use_json, handle_callback);
+	return ((int (*)(uintptr_t, uintptr_t, char, get_device_callback_t))r)(ptr, callback, use_json, GetDeviceCallback);
 }
 
 static int device__print(uintptr_t r, uintptr_t self)
@@ -146,7 +141,7 @@ func (dev *DevicePlugin) Init(lookup func(symName string) (uintptr, error)) erro
 		cbHandle := cgo.NewHandle(cb)
 		defer cbHandle.Delete()
 
-		var jsonMode C.uint8_t = 0
+		var jsonMode C.char = 0
 
 		if useJson {
 			jsonMode = 1
