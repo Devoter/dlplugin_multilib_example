@@ -15,7 +15,6 @@ import "C"
 
 import (
 	"fmt"
-	"os"
 	"runtime/cgo"
 	"sync"
 	"unsafe"
@@ -67,7 +66,6 @@ func get_device(ptr C.uintptr_t, cbID C.uintptr_t, useJSON C.char, callback C.ge
 	}
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "could not encode a device, error=[%v]\n", err)
 		mx.RUnlock()
 		return -2
 	}
