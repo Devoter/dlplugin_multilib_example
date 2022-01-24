@@ -209,7 +209,7 @@ func (dev *DevicePlugin) Init(lookup func(symName string) (uintptr, error)) erro
 
 //export GetDeviceCallback
 func GetDeviceCallback(h C.uintptr_t, data *C.char, size C.size_t) {
-	callback := cgo.Handle(uintptr(h)).Value().(getDeviceCallbackFn)
+	callback := cgo.Handle(h).Value().(getDeviceCallbackFn)
 
 	callback(data, size)
 }
